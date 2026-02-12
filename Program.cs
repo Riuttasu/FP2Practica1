@@ -24,6 +24,8 @@
         }
         static void Render(Estado est)
         {
+            ConsoleColor[] colores = (ConsoleColor[])
+            ConsoleColor.GetValues(typeof(ConsoleColor));
 
         }
         static void MarcaSalida(Estado est)
@@ -46,5 +48,10 @@
         {
 
         }
+        static int BloqueToInt(char c)
+        {
+            return ((int)c) - ((int) ’a’) +1;
+        }
+
     }
 }
