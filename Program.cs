@@ -9,7 +9,7 @@
         }
         struct Estado
         { // estado del juego
-            public char[,] mat; // ’#’ muro; ’.’ libre; letras ’a’,’b’ ... bloques
+            public char[,] mat; // '#' muro; '.' libre; letras 'a','b' ... bloques
             public char obj; // char correspondiente al bloque objetivo (el que hay que sacar)
             public Coor act, sal; // posiciones del cursor y de la salida
             public bool sel; // idica si hay bloque seleccionado para mover o no
@@ -34,26 +34,26 @@
             while (!espacio)
             {
                 linea = file.ReadLine() + ' ';
-                if (!numColumna) { numColumna = true;  numCol = linea.GetLength; }
+                if (!numColumna) { numColumna = true; numCol = linea.GetLength; }
                 if (linea == " ") espacio = true;
                 else { tablero += linea; i++; }
             }
-            nivel.mat = new char[numCol+2, i+2];
-            string[] lineas = tablero.Split (' ');
-            for (int i = 0; i < nivel.mat.GetLength[0];i++) nivel.mat[i, 0] = '#';
-            for (int i = 0; i < nivel.mat.GetLength[1]-2; i++)
+            nivel.mat = new char[numCol + 2, i + 2];
+            string[] lineas = tablero.Split(' ');
+            for (int i = 0; i < nivel.mat.GetLength[0]; i++) nivel.mat[i, 0] = '#';
+            for (int i = 0; i < nivel.mat.GetLength[1] - 2; i++)
             {
                 for (int j = 0; i < nivel.mat.GetLength[0]; j++)
                 {
                     nivel.mat[0] = '#';
-                    for (int k = 0;i< nivel.mat.GetLength[0]-2;k++)
+                    for (int k = 0; i < nivel.mat.GetLength[0] - 2; k++)
                     {
                         nivel.mat[k + 1, i] = lineas[k][i];
                     }
                     nivel.mat[nivel.mat.GetLenght[0]] = '#';
                 }
             }
-            for (int i = 0; i < mat.GetLength[0];i++) nivel.mat[i, mat.GetLenght[1]] = '#';
+            for (int i = 0; i < mat.GetLength[0]; i++) nivel.mat[i, mat.GetLenght[1]] = '#';
             nivel.act.x = 1; nivel.act.y = 1;
             return nivel;
         }
@@ -100,7 +100,6 @@
         static void ProcesaInput(ref Estado est, char c)
         {
             Coor pos = est.act; // Posición del cursor actual (más fácil acceso)
-            Coor dir; // Dirección de movimiento
             switch (c)
             {
                 case 's':
@@ -133,11 +132,28 @@
         }
         static char LeeInput()
         {
-
+            char d = ' ';
+            while (d == ' ') {
+                if (Console.KeyAvailable)
+                {
+                    string tecla = Console.ReadKey().Key.ToString();
+                    switch (tecla)
+                    {
+                        case "LeftArrow": d = 'l'; break; // direccones
+                        case "UpArrow": d = 'u'; break;
+                        case "RightArrow": d = 'r'; break;
+                        case "DownArrow": d = 'd'; break;
+                        case "Delete": d = 'z'; break; // deshacer jugada
+                        case "Escape": d = 'q'; break; // salir
+                        case "Spacebar": d = 's'; break; // selección de bloque
+                    }
+                }
+            }
+            return d;
         }
         static int BloqueToInt(char c)
         {
-            return ((int)c) - ((int) 'a') +1;
+            return ((int)c) - ((int)'a') + 1;
         }
 
     }
