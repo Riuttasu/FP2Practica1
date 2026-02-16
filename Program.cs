@@ -96,18 +96,27 @@
             if (est.sel) // Solo mueve si hay bloque seleccionado
             {
                 Coor cabeza = BuscaCabeza(dir, est); // Busca la última parte del bloque en la dirección buscada
+
             }
+
+        }
+        static char CompruebaCasilla(Estado est, Coor dir, Coor pos)
+        {
+            char c = ' ';
+
+            return c;
         }
         static Coor BuscaCabeza(Coor dir, Estado est)
         {
             Coor pos = est.act; // Posición a comprobar, empieza en el cursor 
             Coor cabeza = pos; // Posición inicial de la cabeza -> justo en el cursor
             char c = est.mat[pos.x, pos.y]; // Caracter del bloque
-            bool fin = false;
+            bool fin = false; // bandera
             while (!fin)
             {
-                if (est.mat[pos.x, pos.y] != c) fin = true;
-                else cabeza = pos;
+                pos.x += dir.x; pos.y += dir.y; // Se avanza en la dirección
+                if (est.mat[pos.x, pos.y] != c) fin = true; // Si no coinciden los char, acaba
+                else cabeza = pos; // Si coinciden, se reasigna la cabeza
             }
             return cabeza;
         }
