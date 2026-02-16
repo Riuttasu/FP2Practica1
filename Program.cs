@@ -59,7 +59,15 @@ namespace FP2Practica1
         {
             ConsoleColor[] colores = (ConsoleColor[])
             ConsoleColor.GetValues(typeof(ConsoleColor));
-
+            Console.Cursor.Position = (0, 0);
+            for (int i = 0; i < est.mat.GetLenght(0); i++)
+            {
+                
+            }
+        }
+        static int BloqueToInt(char c)
+        {
+            return ((int)c) - ((int)'a') + 1;
         }
         static void MarcaSalida(Estado est)
         {
