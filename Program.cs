@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace FP2Practica1
+﻿namespace FP2Practica1
 {
     internal class Program
     {
@@ -18,7 +16,8 @@ namespace FP2Practica1
         }
         static void Main(string[] args)
         {
-            Console.WriteLine("Hello, World!");
+            Estado Nivel1 = LeeNivel("levels.txt", 1);
+            Render(Nivel1);
         }
         static Estado LeeNivel(string file, int n)
         {
@@ -39,19 +38,19 @@ namespace FP2Practica1
                 if (linea == " ") espacio = true;
                 else { tablero += linea; s++; }
             }
-            nivel.mat = new char[numCol + 2, s + 2];
+            nivel.mat = new char[numCol + 1, s + 2];
             string[] lineas = tablero.Split(' ');
-            for (int j = 0; j < nivel.mat.GetLength(0); j++) nivel.mat[j, 0] = '#';
-            for (int i = 0; i < nivel.mat.GetLength(1) - 2; i++)
+            for (int j = 0; j < nivel.mat.GetLength(1); j++) nivel.mat[0, j] = '#';
+            for (int i = 1; i < nivel.mat.GetLength(0) - 1; i++)
             {
-                nivel.mat[0, i] = '#';
-                for (int k = 0; i < nivel.mat.GetLength(0) - 2; k++)
+                nivel.mat[i, 0] = '#';
+                for (int k = 1; k < nivel.mat.GetLength(1) - 1; k++)
                 {
-                    nivel.mat[k + 1, i] = lineas[k][i];
+                    nivel.mat[i, k] = lineas[i - 1][k - 1];
                 }
-                nivel.mat[nivel.mat.GetLength(0), i] = '#';
+                nivel.mat[i, nivel.mat.GetLength(1) - 1] = '#';
             }
-            for (int u = 0; u < nivel.mat.GetLength(0); u++) nivel.mat[u, nivel.mat.GetLength(1)] = '#';
+            for (int u = 0; u < nivel.mat.GetLength(1); u++) nivel.mat[nivel.mat.GetLength(0) - 1, u] = '#';
             nivel.act.x = 1; nivel.act.y = 1;
             return nivel;
         }
@@ -59,12 +58,21 @@ namespace FP2Practica1
         {
             ConsoleColor[] colores = (ConsoleColor[])
             ConsoleColor.GetValues(typeof(ConsoleColor));
-            Console.Cursor.Position = (0, 0);
-            for (int i = 0; i < est.mat.GetLenght(0); i++)
+            Console.SetCursorPosition(0, 0);
+            for (int i = 0; i < est.mat.GetLength(0); i++)
             {
-                
+                for (int j = 0; j < est.mat.GetLength(1); j++)
+                {
+                    if (est.mat[i, j] == '#') Console.BackgroundColor = colores[colores.GetLength(0) - 1];
+                    else if (est.mat[i, j] == '.') Console.BackgroundColor = colores[0];
+                    else Console.BackgroundColor = colores[BloqueToInt(est.mat[i, j])];
+                    Console.Write("  ");
+                }
+                Console.WriteLine();
             }
+            Console.ResetColor();
         }
+
         static int BloqueToInt(char c)
         {
             return ((int)c) - ((int)'a') + 1;
@@ -158,11 +166,6 @@ namespace FP2Practica1
             }
             return d;
         }
-        static int BloqueToInt(char c)
-        {
-            return ((int)c) - ((int)'a') + 1;
-        }
-
     }
 }
 
