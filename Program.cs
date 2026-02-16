@@ -1,4 +1,6 @@
-﻿namespace FP2Practica1
+﻿using System;
+
+namespace FP2Practica1
 {
     internal class Program
     {
@@ -20,40 +22,36 @@
         }
         static Estado LeeNivel(string file, int n)
         {
-            Estado nivel;
-            StreamReader file = new StreamReader(file);
-            string l = "level " + n;
-            while (file.ReadLine() != l) ;
-            nivel.obj = file.Read();
-            file.ReadLine();
-            bool espacio = false;
-            string tablero, linea;
-            bool numColumna = false;
-            int numCol = 0;
-            int i = 0;
+            Estado nivel; nivel.sel = false; nivel.sal.x = 0; nivel.sal.y = 0; //Inicializo las variables que se van a rellenan más tarde
+            StreamReader File = new StreamReader(file);
+            string l = "level " + n; //Busco una fila que tenga Level n en el contenido
+            while (File.ReadLine() != l) ; //Muevo el cursor del archivo hasta llegar al level correspondiente 
+            nivel.obj = char.Parse(File.ReadLine()); //Registro la primera linea que corresponde al bloque objetivo
+            bool espacio = false; //Bandera hasta encontrar lineas vacías
+            string tablero = ""; string linea; //tablero indica todo el tablero en una línea y linea será cada linea del archivo
+            bool numColumna = false; //Bandera para leer solo la primera fila para le número de columnas ya que todas son iguales
+            int numCol = 0; //el número de columnas
+            int s = 0; //Número de filas
             while (!espacio)
             {
-                linea = file.ReadLine() + ' ';
-                if (!numColumna) { numColumna = true; numCol = linea.GetLength; }
+                linea = File.ReadLine() + ' ';
+                if (!numColumna) { numColumna = true; numCol = linea.Length; }
                 if (linea == " ") espacio = true;
-                else { tablero += linea; i++; }
+                else { tablero += linea; s++; }
             }
-            nivel.mat = new char[numCol + 2, i + 2];
+            nivel.mat = new char[numCol + 2, s + 2];
             string[] lineas = tablero.Split(' ');
-            for (int i = 0; i < nivel.mat.GetLength[0]; i++) nivel.mat[i, 0] = '#';
-            for (int i = 0; i < nivel.mat.GetLength[1] - 2; i++)
+            for (int j = 0; j < nivel.mat.GetLength(0); j++) nivel.mat[j, 0] = '#';
+            for (int i = 0; i < nivel.mat.GetLength(1) - 2; i++)
             {
-                for (int j = 0; i < nivel.mat.GetLength[0]; j++)
+                nivel.mat[0, i] = '#';
+                for (int k = 0; i < nivel.mat.GetLength(0) - 2; k++)
                 {
-                    nivel.mat[0] = '#';
-                    for (int k = 0; i < nivel.mat.GetLength[0] - 2; k++)
-                    {
-                        nivel.mat[k + 1, i] = lineas[k][i];
-                    }
-                    nivel.mat[nivel.mat.GetLenght[0]] = '#';
+                    nivel.mat[k + 1, i] = lineas[k][i];
                 }
+                nivel.mat[nivel.mat.GetLength(0), i] = '#';
             }
-            for (int i = 0; i < mat.GetLength[0]; i++) nivel.mat[i, mat.GetLenght[1]] = '#';
+            for (int u = 0; u < nivel.mat.GetLength(0); u++) nivel.mat[u, nivel.mat.GetLength(1)] = '#';
             nivel.act.x = 1; nivel.act.y = 1;
             return nivel;
         }
@@ -95,7 +93,7 @@
                 if (est.mat[pos.x, pos.y] != c) fin = true;
                 else cabeza = pos;
             }
-
+            return cabeza;
         }
         static void ProcesaInput(ref Estado est, char c)
         {
@@ -133,7 +131,8 @@
         static char LeeInput()
         {
             char d = ' ';
-            while (d == ' ') {
+            while (d == ' ')
+            {
                 if (Console.KeyAvailable)
                 {
                     string tecla = Console.ReadKey().Key.ToString();
@@ -158,3 +157,4 @@
 
     }
 }
+
