@@ -16,6 +16,7 @@
         }
         static void Main(string[] args)
         {
+            Console.CursorVisible = false;
             Estado Nivel1 = LeeNivel("levels.txt", 1);
             bool hayJuego = true;
             while (hayJuego)
@@ -121,10 +122,6 @@
                     MueveCursor(ref est, dir); // Mueve el cursor junto al bloque
                 }
             }
-        }
-        static char CharCasilla(Estado est, Coor dir, Coor pos)
-        {
-            return est.mat[pos.x + dir.x, pos.y + dir.y];
         }
         static Coor BuscaCabeza(Coor dir, Estado est)
         {
