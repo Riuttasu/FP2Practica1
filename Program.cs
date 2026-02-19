@@ -112,7 +112,7 @@
             {
                 Coor negdir = dir; negdir.x *= -1; negdir.y *= -1; // Dirección contraria
                 Coor cabeza = BuscaCabeza(dir, est); // Busca la última parte del bloque en la dirección buscada
-                Coor cola = BuscaCabeza(negdir, est); // Cola es la última posición en la dirección contraria del bloque entero
+                Coor cola = BuscaCabeza(negdir, est); // Cola es la última posición en la dirección contraria del bloque entero (cabeza contraria)
                 char c = est.mat[cabeza.y, cabeza.x]; // Carácter de la cabeza
                 if (cola.x != cabeza.x && cola.y != cabeza.y && est.mat[cabeza.x + dir.x, cabeza.y + dir.y] == '.') // Solo lo mueve si el espacio de alante está libre, y la cola no es la misma que la cabeza
                 {
@@ -121,7 +121,6 @@
                     MueveCursor(ref est, dir); // Mueve el cursor junto al bloque
                 }
             }
-
         }
         static char CharCasilla(Estado est, Coor dir, Coor pos)
         {
