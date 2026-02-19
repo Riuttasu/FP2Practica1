@@ -17,7 +17,13 @@
         static void Main(string[] args)
         {
             Estado Nivel1 = LeeNivel("levels.txt", 1);
-            Render(Nivel1);
+            bool hayJuego = true;
+            while (hayJuego)
+            {
+                Render(Nivel1);
+                char c = LeeInput();
+                ProcesaInput(ref Nivel1, c);
+            }
         }
         static Estado LeeNivel(string file, int n)
         {
@@ -70,11 +76,16 @@
                 }
                 Console.WriteLine();
             }
-            Console.ResetColor();
-            Console.SetCursorPosition(est.act.x * 2, est.act.y * 2);
+            if (est.mat[est.act.y, est.act.x] == '.') Console.BackgroundColor = colores[0];
+            else Console.BackgroundColor = colores[BloqueToInt(est.mat[est.act.y, est.act.x])];
+
+            Console.SetCursorPosition(est.act.x * 2, est.act.y);
+
             if (est.sel) Console.WriteLine("<>");
             else Console.WriteLine("**");
+
             Console.SetCursorPosition(0, est.mat.GetLength(0) + 3);
+            Console.ResetColor();
         }
 
         static int BloqueToInt(char c)
@@ -89,9 +100,9 @@
         {
             if (!est.sel) // Solo mueve si no hay bloque seleccionado
             {
-                if (est.act.x + dir.x > 1 && est.act.x + dir.x < est.mat.GetLength(0)) // Comprueba que no se sale de los bordes de juego
+                if (est.act.x + dir.x >= 1 && est.act.x + dir.x < est.mat.GetLength(0) - 1) // Comprueba que no se sale de los bordes de juego
                     est.act.x += dir.x; // Movimiento horizontal
-                if (est.act.y + dir.y > 1 && est.act.y + dir.y < est.mat.GetLength(1)) // Comprueba que no se sale de los bordes de juego
+                if (est.act.y + dir.y >= 1 && est.act.y + dir.y < est.mat.GetLength(1) - 1) // Comprueba que no se sale de los bordes de juego
                     est.act.y += dir.y; // Movimiento vertical
             }
         }
@@ -99,18 +110,14 @@
         {
             if (est.sel) // Solo mueve si hay bloque seleccionado
             {
-                Coor cabeza = BuscaCabeza(dir, est); // Busca la última parte del bloque en la dirección buscada
-                Coor cola = cabeza; // Cola es la última posición en la dirección contraria del bloque entero
-                char c = est.mat[cabeza.x, cabeza.y]; // Carácter de la cabeza
                 Coor negdir = dir; negdir.x *= -1; negdir.y *= -1; // Dirección contraria
-                while (c == CharCasilla(est, negdir, cola)) // Comprueba si en la dirección contraria sigue habiendo bloque
-                {
-                    cola.x += negdir.x; cola.y += negdir.y; // Mueve la cola 
-                }
+                Coor cabeza = BuscaCabeza(dir, est); // Busca la última parte del bloque en la dirección buscada
+                Coor cola = BuscaCabeza(negdir, est); // Cola es la última posición en la dirección contraria del bloque entero
+                char c = est.mat[cabeza.y, cabeza.x]; // Carácter de la cabeza
                 if (cola.x != cabeza.x && cola.y != cabeza.y && est.mat[cabeza.x + dir.x, cabeza.y + dir.y] == '.') // Solo lo mueve si el espacio de alante está libre, y la cola no es la misma que la cabeza
                 {
-                    est.mat[cola.x, cola.y] = '.'; // Reemplaza la cola por un espacio en blanco
-                    est.mat[cabeza.x + dir.x, cabeza.y + dir.y] = c; // Reemplaza el espacio frente a la cabeza en dir por el carácter del bloque
+                    est.mat[cola.y, cola.x] = '.'; // Reemplaza la cola por un espacio en blanco
+                    est.mat[cabeza.y + dir.y, cabeza.x + dir.x] = c; // Reemplaza el espacio frente a la cabeza en dir por el carácter del bloque
                     MueveCursor(ref est, dir); // Mueve el cursor junto al bloque
                 }
             }
@@ -125,12 +132,10 @@
             Coor pos = est.act; // Posición a comprobar, empieza en el cursor 
             Coor cabeza = pos; // Posición inicial de la cabeza -> justo en el cursor
             char c = est.mat[pos.x, pos.y]; // Caracter del bloque
-            bool fin = false; // bandera
-            while (!fin)
+            while (est.mat[pos.x, pos.y] == c)
             {
                 pos.x += dir.x; pos.y += dir.y; // Se avanza en la dirección
-                if (est.mat[pos.x, pos.y] != c) fin = true; // Si no coinciden los char, acaba
-                else cabeza = pos; // Si coinciden, se reasigna la cabeza
+                cabeza = pos; // Si coinciden, se reasigna la cabeza
             }
             return cabeza;
         }
@@ -140,7 +145,7 @@
             switch (c)
             {
                 case 's':
-                    if (est.mat[pos.x, pos.y] != '#' && est.mat[pos.x, pos.y] != '.') // Comprueba si está el cursor sobre un bloque
+                    if (est.mat[pos.y, pos.x] != '#' && est.mat[pos.y, pos.x] != '.') // Comprueba si está el cursor sobre un bloque
                         est.sel = !est.sel; // Invierte sel
                     break;
                 case 'u':
