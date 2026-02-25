@@ -114,11 +114,11 @@
                 Coor negdir = dir; negdir.x *= -1; negdir.y *= -1; // Dirección contraria
                 Coor cabeza = BuscaCabeza(dir, est); // Busca la última parte del bloque en la dirección buscada
                 Coor cola = BuscaCabeza(negdir, est); // Cola es la última posición en la dirección contraria del bloque entero (cabeza contraria)
-                char c = est.mat[cabeza.y, cabeza.x]; // Carácter de la cabeza
-                if (cola.x != cabeza.x && cola.y != cabeza.y && est.mat[cabeza.x + dir.x, cabeza.y + dir.y] == '.') // Solo lo mueve si el espacio de alante está libre, y la cola no es la misma que la cabeza
+                char c = est.mat[cabeza.x, cabeza.y]; // Carácter de la cabeza
+                if ((cola.x != cabeza.x || cola.y != cabeza.y) && est.mat[cabeza.x + dir.x, cabeza.y + dir.y] == '.') // Solo lo mueve si el espacio de alante está libre, y la cola no es la misma que la cabeza
                 {
-                    est.mat[cola.y, cola.x] = '.'; // Reemplaza la cola por un espacio en blanco
-                    est.mat[cabeza.y + dir.y, cabeza.x + dir.x] = c; // Reemplaza el espacio frente a la cabeza en dir por el carácter del bloque
+                    est.mat[cola.x, cola.y] = '.'; // Reemplaza la cola por un espacio en blanco
+                    est.mat[cabeza.x + dir.y, cabeza.y + dir.x] = c; // Reemplaza el espacio frente a la cabeza en dir por el carácter del bloque
                     MueveCursor(ref est, dir); // Mueve el cursor junto al bloque
                 }
             }
@@ -127,10 +127,10 @@
         {
             Coor pos = est.act; // Posición a comprobar, empieza en el cursor 
             Coor cabeza = pos; // Posición inicial de la cabeza -> justo en el cursor
-            char c = est.mat[pos.x, pos.y]; // Caracter del bloque
-            while (est.mat[pos.x, pos.y] == c)
+            char c = est.mat[pos.y, pos.x]; // Caracter del bloque
+            while (est.mat[pos.y, pos.x] == c)
             {
-                pos.x += dir.x; pos.y += dir.y; // Se avanza en la dirección
+                pos.y += dir.x; pos.x += dir.y; // Se avanza en la dirección
                 cabeza = pos; // Si coinciden, se reasigna la cabeza
             }
             return cabeza;
