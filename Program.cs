@@ -85,6 +85,11 @@
             if (est.sel) Console.WriteLine("<>");
             else Console.WriteLine("**");
 
+            MarcaSalida(ref est);
+            Console.SetCursorPosition(est.sal.x * 2, est.sal.y);
+            Console.BackgroundColor = colores[0];
+            Console.Write("  ");
+
             Console.SetCursorPosition(0, est.mat.GetLength(0) + 3);
             Console.ResetColor();
         }
@@ -93,9 +98,26 @@
         {
             return ((int)c) - ((int)'a') + 1;
         }
-        static void MarcaSalida(Estado est)
+        static void MarcaSalida(ref Estado est)
         {
-
+            int fila, colu;
+            int i = 0;
+            int j = 0;
+            Coor bloqObj; bloqObj.x = 0; bloqObj.y = 0;
+            bool encontrado = false;
+            while (i < est.mat.GetLength(1) && !encontrado)
+            {
+                j = 0;
+                while (j < est.mat.GetLength(0) && !encontrado)
+                {
+                    if (est.mat[i, j] == est.obj) { encontrado = true; bloqObj.y = i; bloqObj.x = j; }
+                    j++;
+                }
+                i++;
+            }
+            if (est.mat[bloqObj.y + 1, bloqObj.x] == est.obj) { colu = bloqObj.x; fila = est.mat.GetLength(0) - 1; }
+            else { colu = est.mat.GetLength(0) - 1; fila = bloqObj.y; }
+            est.sal.x = colu; est.sal.y = fila;
         }
         static void MueveCursor(ref Estado est, Coor dir)
         {
@@ -189,4 +211,3 @@
         }
     }
 }
-
