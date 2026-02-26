@@ -15,7 +15,7 @@
         struct Memoria
         {
             public Jugada[] Jugadas; //Serie de jugadas
-            public int ind; //
+            public int ind; //Indice de la jugada actual
         }
         struct Estado
         { // estado del juego
@@ -26,8 +26,10 @@
         }
         static void Main(string[] args)
         {
-            Console.CursorVisible = false;
+            Memoria memoria; memoria.ind = 0; memoria.Jugadas = new Jugada[100];
             int level = int.Parse(Console.ReadLine());
+
+            Console.CursorVisible = false;
             Estado Nivel = LeeNivel("levels.txt", level);
             MarcaSalida(ref Nivel);
             bool hayJuego = true;
@@ -37,8 +39,11 @@
             while (hayJuego && !victoria)
             {
                 char c = LeeInput();
-                ProcesaInput(ref Nivel, c);
+
                 if (c == 'q') hayJuego = false;
+                else if (c == 'z') Delete(ref memoria, ref Nivel);
+                else ProcesaInput(ref Nivel, c, ref memoria);
+
                 Render(Nivel);
                 if (Nivel.mat[Nivel.sal.y, Nivel.sal.x] == Nivel.obj) victoria = true;
             }
@@ -46,6 +51,25 @@
             {
                 Console.WriteLine("GANASTE");
             }
+            else Console.Clear();
+        }
+        static void Delete(ref Memoria mem, ref Estado est)
+        {
+            if (mem.ind > 0)
+            {
+                Coor dir;
+                Memoria noMem = new Memoria();
+                mem.ind--;
+                dir.x = mem.Jugadas[mem.ind].emp.x - mem.Jugadas[mem.ind].aca.x;
+                dir.y = mem.Jugadas[mem.ind].emp.y - mem.Jugadas[mem.ind].aca.y;
+                if (!(dir.x == 0 && dir.y == 0))
+                {
+                    MueveBloque(ref est, dir, ref noMem);
+                }
+                mem.Jugadas[mem.ind].aca.x = mem.Jugadas[mem.ind].emp.x; mem.Jugadas[mem.ind].aca.y = mem.Jugadas[mem.ind].emp.y;
+                
+            }
+
         }
         static Estado LeeNivel(string file, int n)
         {
@@ -149,7 +173,7 @@
             if (est.act.y + dir.y >= 1 && est.act.y + dir.y < est.mat.GetLength(1) - 1) // Comprueba que no se sale de los bordes de juego
                 est.act.y += dir.y; // Movimiento vertical
         }
-        static void MueveBloque(ref Estado est, Coor dir)
+        static void MueveBloque(ref Estado est, Coor dir, ref Memoria mem)
         {
             if (est.sel) // Solo mueve si hay bloque seleccionado
             {
@@ -161,7 +185,11 @@
                 {
                     est.mat[cola.y, cola.x] = '.'; // Reemplaza la cola por un espacio en blanco
                     est.mat[cabeza.y + dir.y, cabeza.x + dir.x] = c; // Reemplaza el espacio frente a la cabeza en dir por el carácter del bloque
+                    
+                    mem.Jugadas[mem.ind].emp.x = est.act.x; mem.Jugadas[mem.ind].emp.y = est.act.y;
                     MueveCursor(ref est, dir); // Mueve el cursor junto al bloque
+                    mem.Jugadas[mem.ind].aca.x = est.act.x; mem.Jugadas[mem.ind].aca.y = est.act.y;
+                    mem.ind++;
                 }
             }
         }
@@ -177,7 +205,7 @@
             }
             return cabeza;
         }
-        static void ProcesaInput(ref Estado est, char c)
+        static void ProcesaInput(ref Estado est, char c, ref Memoria mem)
         {
             Coor pos = est.act; // Posición del cursor actual (más fácil acceso)
             switch (c)
@@ -187,27 +215,25 @@
                         est.sel = !est.sel; // Invierte sel
                     break;
                 case 'u':
-                    Mueve(0, -1, ref est);
+                    Mueve(0, -1, ref est, ref mem);
                     break;
                 case 'd':
-                    Mueve(0, 1, ref est);
+                    Mueve(0, 1, ref est, ref mem);
                     break;
                 case 'l':
-                    Mueve(-1, 0, ref est);
+                    Mueve(-1, 0, ref est, ref mem);
                     break;
                 case 'r':
-                    Mueve(1, 0, ref est);
+                    Mueve(1, 0, ref est, ref mem);
                     break;
-                case 'z': break;
-                case 'q': break;
                 default: break;
             }
         }
-        static void Mueve(int x, int y, ref Estado est)
+        static void Mueve(int x, int y, ref Estado est, ref Memoria mem)
         {
             Coor dir;
             dir.x = x; dir.y = y;
-            if (est.sel) MueveBloque(ref est, dir);
+            if (est.sel) MueveBloque(ref est, dir, ref mem);
             else MueveCursor(ref est, dir);
         }
         static char LeeInput()
