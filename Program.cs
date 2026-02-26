@@ -7,6 +7,16 @@
         {
             public int x, y;
         }
+        struct Jugada
+        {
+            public Coor aca; //Posición final de la jugada
+            public Coor emp; //Posición inicial de la jugada
+        }
+        struct Memoria
+        {
+            public Jugada[] Jugadas; //Serie de jugadas
+            public int ind; //
+        }
         struct Estado
         { // estado del juego
             public char[,] mat; // '#' muro; '.' libre; letras 'a','b' ... bloques
@@ -17,13 +27,24 @@
         static void Main(string[] args)
         {
             Console.CursorVisible = false;
-            Estado Nivel1 = LeeNivel("levels.txt", 1);
+            int level = int.Parse(Console.ReadLine());
+            Estado Nivel = LeeNivel("levels.txt", level);
+            MarcaSalida(ref Nivel);
             bool hayJuego = true;
-            while (hayJuego)
+            bool victoria = false;
+
+            Render(Nivel);
+            while (hayJuego && !victoria)
             {
-                Render(Nivel1);
                 char c = LeeInput();
-                ProcesaInput(ref Nivel1, c);
+                ProcesaInput(ref Nivel, c);
+                if (c == 'q') hayJuego = false;
+                Render(Nivel);
+                if (Nivel.mat[Nivel.sal.y, Nivel.sal.x] == Nivel.obj) victoria = true;
+            }
+            if (victoria)
+            {
+                Console.WriteLine("GANASTE");
             }
         }
         static Estado LeeNivel(string file, int n)
@@ -84,11 +105,12 @@
 
             if (est.sel) Console.WriteLine("<>");
             else Console.WriteLine("**");
-
-            MarcaSalida(ref est);
-            Console.SetCursorPosition(est.sal.x * 2, est.sal.y);
-            Console.BackgroundColor = colores[0];
-            Console.Write("  ");
+            if (est.mat[est.sal.y, est.sal.x] != est.obj)
+            {
+                Console.SetCursorPosition(est.sal.x * 2, est.sal.y);
+                Console.BackgroundColor = colores[0];
+                Console.Write("  ");
+            }
 
             Console.SetCursorPosition(0, est.mat.GetLength(0) + 3);
             Console.ResetColor();
@@ -118,6 +140,7 @@
             if (est.mat[bloqObj.y + 1, bloqObj.x] == est.obj) { colu = bloqObj.x; fila = est.mat.GetLength(0) - 1; }
             else { colu = est.mat.GetLength(0) - 1; fila = bloqObj.y; }
             est.sal.x = colu; est.sal.y = fila;
+            est.mat[fila, colu] = '.';
         }
         static void MueveCursor(ref Estado est, Coor dir)
         {
@@ -211,3 +234,4 @@
         }
     }
 }
+
