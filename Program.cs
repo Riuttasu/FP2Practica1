@@ -3,6 +3,7 @@
     internal class Program
     {
         // coordenadas (x,y) para representar posiciones y direcciones de desplazamiento
+        const int maxMem = 10;
         struct Coor
         {
             public int x, y;
@@ -26,7 +27,7 @@
         }
         static void Main(string[] args)
         {
-            Memoria memoria; memoria.ind = 0; memoria.Jugadas = new Jugada[100];
+            Memoria memoria; memoria.ind = 0; memoria.Jugadas = new Jugada[10];
             int level = int.Parse(Console.ReadLine());
 
             Console.CursorVisible = false;
@@ -42,7 +43,10 @@
 
                 if (c == 'q') hayJuego = false;
                 else if (c == 'z') Delete(ref memoria, ref Nivel);
-                else ProcesaInput(ref Nivel, c, ref memoria);
+                else
+                {
+                    ProcesaInput(ref Nivel, c, ref memoria);
+                }
 
                 Render(Nivel);
                 if (Nivel.mat[Nivel.sal.y, Nivel.sal.x] == Nivel.obj) victoria = true;
@@ -58,15 +62,17 @@
             if (mem.ind > 0)
             {
                 Coor dir;
-                Memoria noMem = new Memoria();
                 mem.ind--;
-                dir.x = mem.Jugadas[mem.ind].emp.x - mem.Jugadas[mem.ind].aca.x;
-                dir.y = mem.Jugadas[mem.ind].emp.y - mem.Jugadas[mem.ind].aca.y;
+                dir.x = mem.Jugadas[mem.ind % maxMem].emp.x - mem.Jugadas[mem.ind % maxMem].aca.x;
+                dir.y = mem.Jugadas[mem.ind % maxMem].emp.y - mem.Jugadas[mem.ind % maxMem].aca.y;
                 if (!(dir.x == 0 && dir.y == 0))
                 {
-                    MueveBloque(ref est, dir, ref noMem);
+                    est.act.x = mem.Jugadas[mem.ind % maxMem].aca.x; est.act.y = mem.Jugadas[mem.ind % maxMem].aca.y;
+                    est.sel = true;
+                    MueveBloque(ref est, dir, ref mem, false);
+                    est.sel = false;
                 }
-                mem.Jugadas[mem.ind].aca.x = mem.Jugadas[mem.ind].emp.x; mem.Jugadas[mem.ind].aca.y = mem.Jugadas[mem.ind].emp.y;
+                mem.Jugadas[mem.ind % maxMem].aca.x = mem.Jugadas[mem.ind % maxMem].emp.x; mem.Jugadas[mem.ind % maxMem].aca.y = mem.Jugadas[mem.ind % maxMem].emp.y;
                 
             }
 
@@ -173,7 +179,7 @@
             if (est.act.y + dir.y >= 1 && est.act.y + dir.y < est.mat.GetLength(1) - 1) // Comprueba que no se sale de los bordes de juego
                 est.act.y += dir.y; // Movimiento vertical
         }
-        static void MueveBloque(ref Estado est, Coor dir, ref Memoria mem)
+        static void MueveBloque(ref Estado est, Coor dir, ref Memoria mem, bool registro)
         {
             if (est.sel) // Solo mueve si hay bloque seleccionado
             {
@@ -186,10 +192,13 @@
                     est.mat[cola.y, cola.x] = '.'; // Reemplaza la cola por un espacio en blanco
                     est.mat[cabeza.y + dir.y, cabeza.x + dir.x] = c; // Reemplaza el espacio frente a la cabeza en dir por el carácter del bloque
                     
-                    mem.Jugadas[mem.ind].emp.x = est.act.x; mem.Jugadas[mem.ind].emp.y = est.act.y;
+                    if (registro) mem.Jugadas[mem.ind % maxMem].emp.x = est.act.x; mem.Jugadas[mem.ind % maxMem].emp.y = est.act.y;
                     MueveCursor(ref est, dir); // Mueve el cursor junto al bloque
-                    mem.Jugadas[mem.ind].aca.x = est.act.x; mem.Jugadas[mem.ind].aca.y = est.act.y;
-                    mem.ind++;
+                    if (registro)
+                    {
+                        mem.Jugadas[mem.ind % maxMem].aca.x = est.act.x; mem.Jugadas[mem.ind % maxMem].aca.y = est.act.y;
+                        mem.ind++;
+                    }
                 }
             }
         }
@@ -233,7 +242,7 @@
         {
             Coor dir;
             dir.x = x; dir.y = y;
-            if (est.sel) MueveBloque(ref est, dir, ref mem);
+            if (est.sel) MueveBloque(ref est, dir, ref mem, true);
             else MueveCursor(ref est, dir);
         }
         static char LeeInput()
