@@ -27,42 +27,45 @@
         }
         static void Main(string[] args)
         {
-            Memoria memoria; memoria.ind = 0; memoria.Jugadas = new Jugada[10];
-            int level = int.Parse(Console.ReadLine());
-
-            Console.CursorVisible = false;
-            Estado Nivel = LeeNivel("levels.txt", level);
-            MarcaSalida(ref Nivel);
-            bool hayJuego = true;
-            bool victoria = false;
-
-            Render(Nivel);
-            while (hayJuego && !victoria)
+            Memoria memoria; memoria.Jugadas = new Jugada[maxMem];
+            int level;
+            Estado Nivel;
+            bool hayJuego, victoria;
+            while (true)
             {
-                char c = LeeInput();
+                memoria.ind = 0; 
+                level = int.Parse(Console.ReadLine());
 
-                if (c == 'q') hayJuego = false;
-                else if (c == 'z') Delete(ref memoria, ref Nivel);
-                else
-                {
-                    ProcesaInput(ref Nivel, c, ref memoria);
-                }
+                Console.CursorVisible = false;
+                Nivel = LeeNivel("levels.txt", level);
+                MarcaSalida(ref Nivel);
+                hayJuego = true;
+                victoria = false;
 
                 Render(Nivel);
-                if (Nivel.mat[Nivel.sal.y, Nivel.sal.x] == Nivel.obj) victoria = true;
+                while (hayJuego && !victoria)
+                {
+                    char c = LeeInput();
+
+                    if (c == 'q') hayJuego = false;
+                    else if (c == 'z') Delete(ref memoria, ref Nivel);
+                    else ProcesaInput(ref Nivel, c, ref memoria);
+                    Render(Nivel);
+                    if (Nivel.mat[Nivel.sal.y, Nivel.sal.x] == Nivel.obj) victoria = true;
+                }
+                if (victoria)
+                {
+                    Console.WriteLine("GANASTE");
+                }
+                else Console.Clear();
             }
-            if (victoria)
-            {
-                Console.WriteLine("GANASTE");
-            }
-            else Console.Clear();
         }
         static void Delete(ref Memoria mem, ref Estado est)
         {
             if (mem.ind > 0)
             {
                 Coor dir;
-                mem.ind--;
+                mem.ind--;  
                 dir.x = mem.Jugadas[mem.ind % maxMem].emp.x - mem.Jugadas[mem.ind % maxMem].aca.x;
                 dir.y = mem.Jugadas[mem.ind % maxMem].emp.y - mem.Jugadas[mem.ind % maxMem].aca.y;
                 if (!(dir.x == 0 && dir.y == 0))
@@ -110,7 +113,23 @@
             }
             for (int u = 0; u < nivel.mat.GetLength(1); u++) nivel.mat[nivel.mat.GetLength(0) - 1, u] = '#';
             nivel.act.x = 1; nivel.act.y = 1;
+            File.Close();
             return nivel;
+        }
+        static void Record(Memoria mem, int level)
+        {
+            StreamReader records = new StreamReader ("record.txt");
+            bool noHabiaJuego = false;
+            while (!(records.ReadLine() == "level " + level || records.EndOfStream))
+                if (records.EndOfStream) noHabiaJuego = true;
+            if (noHabiaJuego)
+                CreaRecord(level, mem);
+            records.Close();
+        }
+        static void CreaRecord(int level, Memoria mem)
+        {
+            StreamWriter record = new StreamWriter("record.txt");
+            record.WriteLine();
         }
         static void Render(Estado est)
         {
