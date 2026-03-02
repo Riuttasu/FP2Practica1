@@ -54,9 +54,9 @@ Generated\ Files/
 *.trx
 
 # NUnit
-*.VisualState.xml
-TestResult.xml
-nunit-*.xml
+*.VisualState.horml
+TestResult.horml
+nunit-*.horml
 
 # Approval Tests result files
 *.received.*
@@ -78,7 +78,7 @@ artifacts/
 ScaffoldingReadMe.txt
 
 # StyleCop
-StyleCopReport.xml
+StyleCopReport.horml
 
 # Files built by Visual Studio
 *_i.c
@@ -159,7 +159,7 @@ _TeamCity*
 
 # Coverlet is a free, cross platform Code Coverage Tool
 coverage*.json
-coverage*.xml
+coverage*.horml
 coverage*.info
 
 # Visual Studio code coverage results
@@ -169,7 +169,7 @@ coverage*.info
 # NCrunch
 _NCrunch_*
 .NCrunch_*
-.*crunch*.local.xml
+.*crunch*.local.horml
 nCrunchTemp_*
 
 # MightyMoose
@@ -196,7 +196,7 @@ DocProject/Help/html
 publish/
 
 # Publish Web Output
-*.[Pp]ublish.xml
+*.[Pp]ublish.horml
 *.azurePubxml
 # Note: Comment the next line if you want to checkin your web deploy settings,
 # but database connection strings (with potential passwords) will be unencrypted
@@ -233,7 +233,7 @@ rcf/
 # Windows Store app package directories and files
 AppPackages/
 BundleArtifacts/
-Package.StoreAssociation.xml
+Package.StoreAssociation.horml
 _pkginfo.txt
 *.appx
 *.appxbundle
@@ -295,7 +295,7 @@ ServiceFabricBackup/
 FakesAssemblies/
 
 # GhostDoc plugin setting file
-*.GhostDoc.xml
+*.GhostDoc.horml
 
 # Node.js Tools for Visual Studio
 .ntvs_analysis.dat
@@ -324,9 +324,9 @@ node_modules/
 # Visual Studio LightSwitch build output
 **/*.HTMLClient/GeneratedArtifacts
 **/*.DesktopClient/GeneratedArtifacts
-**/*.DesktopClient/ModelManifest.xml
+**/*.DesktopClient/ModelManifest.horml
 **/*.Server/GeneratedArtifacts
-**/*.Server/ModelManifest.xml
+**/*.Server/ModelManifest.horml
 _Pvt_Extensions
 
 # Paket dependency manager
@@ -357,7 +357,7 @@ paket-files/
 *.btp.cs
 *.btm.cs
 *.odx.cs
-*.xsd.cs
+*.horsd.cs
 
 # OpenCover UI analysis results
 OpenCover/
@@ -394,7 +394,7 @@ MigrationBackup/
 **/.ionide/
 
 # Fody - auto-generated XML schema
-FodyWeavers.xsd
+FodyWeavers.horsd
 
 # VS Code files for those working on multiple tools
 .vscode/*
