@@ -68,9 +68,14 @@
                 if (victoria)
                 {
                     Console.WriteLine("GANASTE");
+                    Record(memoria, level); // 
                 }
                 // Si se ha salido del juego mediante input
-                else Console.Clear();
+                else
+                {
+                    Console.Clear();
+                    Console.WriteLine("Juego Abortado");
+                }
             }
         }
         // Deshacer jugada
@@ -138,7 +143,32 @@
             File.Close();
             return nivel;
         }
-
+        
+        // Establece la salida (condición de victoria) del nivel
+        static void MarcaSalida(ref Estado est)
+        {
+            int fila, colu;
+            int i = 0;
+            int j = 0;
+            Coor bloqObj; bloqObj.hor = 0; bloqObj.ver = 0;
+            bool encontrado = false;
+            while (i < est.mat.GetLength(1) && !encontrado)
+            {
+                j = 0;
+                while (j < est.mat.GetLength(0) && !encontrado)
+                {
+                    if (est.mat[i, j] == est.obj) { encontrado = true; bloqObj.ver = i; bloqObj.hor = j; }
+                    j++;
+                }
+                i++;
+            }
+            if (est.mat[bloqObj.ver + 1, bloqObj.hor] == est.obj) { colu = bloqObj.hor; fila = est.mat.GetLength(0) - 1; }
+            else { colu = est.mat.GetLength(0) - 1; fila = bloqObj.ver; }
+            est.sal.hor = colu; est.sal.ver = fila;
+            est.mat[fila, colu] = '.';
+        }
+        // ---- Render ----
+        #region Métodos del render
         // Render del estado de juego interno para la consola
         static void Render(Estado est)
         {
@@ -156,7 +186,7 @@
                     else if (est.mat[i, j] == '.') Console.BackgroundColor = colores[0];
                     else Console.BackgroundColor = colores[BloqueToInt(est.mat[i, j])];
                     // Escritura del bloque
-                    Console.Write("  "); 
+                    Console.Write("  ");
                 }
                 Console.WriteLine();
             }
@@ -182,29 +212,7 @@
         {
             return ((int)c) - ((int)'a') + 1;
         }
-        // Establece la salida (condición de victoria) del nivel
-        static void MarcaSalida(ref Estado est)
-        {
-            int fila, colu;
-            int i = 0;
-            int j = 0;
-            Coor bloqObj; bloqObj.hor = 0; bloqObj.ver = 0;
-            bool encontrado = false;
-            while (i < est.mat.GetLength(1) && !encontrado)
-            {
-                j = 0;
-                while (j < est.mat.GetLength(0) && !encontrado)
-                {
-                    if (est.mat[i, j] == est.obj) { encontrado = true; bloqObj.ver = i; bloqObj.hor = j; }
-                    j++;
-                }
-                i++;
-            }
-            if (est.mat[bloqObj.ver + 1, bloqObj.hor] == est.obj) { colu = bloqObj.hor; fila = est.mat.GetLength(0) - 1; }
-            else { colu = est.mat.GetLength(0) - 1; fila = bloqObj.ver; }
-            est.sal.hor = colu; est.sal.ver = fila;
-            est.mat[fila, colu] = '.';
-        }
+        #endregion
         // ---- Movimiento ----
         #region Métodos de movimiento
         // Mueve el cursor del jugador en una dirección dir
@@ -212,7 +220,7 @@
         {
             if (est.act.hor + dir.hor >= 1 && est.act.hor + dir.hor < est.mat.GetLength(0) - 1) // Comprueba que no se sale de los bordes de juego
                 est.act.hor += dir.hor; // Movimiento horizontal
-            else if (est.act.ver + dir.ver >= 1 && est.act.ver + dir.ver < est.mat.GetLength(1) - 1) // Comprueba que no se sale de los bordes de juego
+            if (est.act.ver + dir.ver >= 1 && est.act.ver + dir.ver < est.mat.GetLength(1) - 1) // Comprueba que no se sale de los bordes de juego
                 est.act.ver += dir.ver; // Movimiento vertical
         }
         // Mueve un bloque seleccionado en una dirección dada si es posible
@@ -328,20 +336,72 @@
         #endregion
         // ---- Archivo de records ----
         #region Métodos función records
+        // Añade el record al archivo de records, si ya existe un record previo, lo compara
         static void Record(Memoria mem, int level)
         {
-            StreamReader records = new StreamReader("record.txt");
-            bool noHabiaJuego = false;
-            while (!(records.ReadLine() == "level " + level || records.EndOfStream))
-                if (records.EndOfStream) noHabiaJuego = true;
-            if (noHabiaJuego)
-                CreaRecord(level, mem);
-            records.Close();
+            StreamReader sr = new StreamReader("record.txt"); // Lectura del archivo de records
+            bool encontrado = false; // Nivel buscado encontrado
+            // 
+            while(!encontrado && !sr.EndOfStream) // Busca el nivel por el archivo
+            {
+                if (sr.ReadLine() == "level " + level) { encontrado = true; }
+            }
+            // Se ha encontrado el nivel, comprobar si se ha batido el record
+            if (encontrado)
+            {
+                int OldMoves = int.Parse(sr.ReadLine()); // Lee el anterior record para ese nivel
+                sr.Close(); // Cierra la lectura
+                if (mem.ind < OldMoves) // Si los movimientos actuales son menores que el record -> cambiar
+                {
+                    EstableceRecord(level,mem.ind);
+                }
+            }
+            // No se ha encontrado el nivel en el registro de records, añadirlo al archivo
+            else
+            {
+                sr.Close();
+                // append añade nuevas lineas al documento en vez de sobreescribir
+                StreamWriter sw = new StreamWriter("record.txt", true);
+                // Se escribe el nuevo nivel con el número de movimientos requeridos para pasarlo
+                sw.WriteLine("level " + level);
+                sw.WriteLine(mem.ind);
+                sw.Close();
+            }
         }
-        static void CreaRecord(int level, Memoria mem)
+        // Reescribe el archivo de records con un nuevo record para un nivel
+        static void EstableceRecord(int level, int NewMoves)
         {
-            StreamWriter record = new StreamWriter("record.txt");
-            record.WriteLine();
+            // Establecimiento de los flujos,
+            // streamwriter escribe en un archivo nuevo, streamreader lee los records antiguos
+            StreamReader sr = new StreamReader("record.txt");
+            StreamWriter sw = new StreamWriter("newrecord.txt");
+            bool encontrado = false; // Condición de bandera de nivel encontrado
+            while (!encontrado && !sr.EndOfStream) // Programación defensiva endofstream
+            {
+                // Copia linea por línea los records antiguos
+                string s = sr.ReadLine();
+                if (s == $"level {level}") // Si el nivel coincide con el buscado, establece bandera
+                {
+                    encontrado = true;
+                }
+                sw.WriteLine(s);
+            }
+            // Escribe el nuevo record para el nivel y se salta la línea en el StreamReader
+            sw.WriteLine(NewMoves) ;
+            sr.ReadLine();
+            // Continua copiando línea por línea hasta acabar el archivo
+            while (!sr.EndOfStream)
+            {
+                string s = sr.ReadLine();
+                sw.WriteLine(s);
+            }
+            // Cierre de ambos Flujos
+            sr.Close();
+            sw.Close();
+            // Reemplaza el archivo de records viejo por el archivo de records nuevo
+            File.Replace("newrecord.txt", "record.txt", null);
+            // Felicidades
+            Console.WriteLine($"Nuevo record para el nivel {level}!!!!!! felicidades ");
         }
         #endregion
     }
