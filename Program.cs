@@ -43,7 +43,7 @@
                 level = int.Parse(Console.ReadLine());
                 Console.CursorVisible = false; Console.Clear();
                 // Se inicializa el estado al nivel deseado
-                est = Leeest("levels.txt", level);
+                est = LeeEst("levels.txt", level);
                 // Se marca la casilla de salida del nivel (condición de victoria)
                 MarcaSalida(ref est);
                 hayJuego = true;
@@ -107,7 +107,7 @@
 
         }
         // Lee un nivel n de un archivo dado
-        static Estado Leeest(string file, int n)
+        static Estado LeeEst(string file, int n)
         {
             Estado nivel; nivel.sel = false; nivel.sal.hor = 0; nivel.sal.ver = 0; //Inicializo las variables que se van a rellenan más tarde
             StreamReader File = new StreamReader(file);
@@ -117,28 +117,29 @@
             bool espacio = false; //Bandera hasta encontrar lineas vacías
             string tablero = ""; string linea; //tablero indica todo el tablero en una línea y linea será cada linea del archivo
             bool numColumna = false; //Bandera para leer solo la primera fila para le número de columnas ya que todas son iguales
-            int numCol = 0; //el número de columnas
-            int s = 0; //Número de filas
+            int numCol = 0; //Número de columnas
+            int numFilas = 0; //Número de filas
             while (!espacio)
             {
+                //Voy registrando linea por linea
                 linea = File.ReadLine() + ' ';
-                if (!numColumna) { numColumna = true; numCol = linea.Length; }
-                if (linea == " ") { espacio = true; }
-                else { tablero += linea; s++; }
+                if (!numColumna) { numColumna = true; numCol = linea.Length - 1; } //Calcula cuantas columnas hay solo una vez
+                if (linea == " ") espacio = true; //Final de tablero encontrado
+                else { tablero += linea; numFilas++; } //Registro la fila y las cuento
             }
-            nivel.mat = new char[numCol + 1, s + 2];
-            string[] lineas = tablero.Split(' ');
-            for (int j = 0; j < nivel.mat.GetLength(1); j++) nivel.mat[0, j] = '#';
-            for (int i = 1; i < nivel.mat.GetLength(0) - 1; i++)
+            nivel.mat = new char[numCol + 2, numFilas + 2]; //Declara array con bordes
+            string[] lineas = tablero.Split(' '); //Separa las lineas del tablero en filas de un array
+            for (int i = 0; i < nivel.mat.GetLength(1); i++) nivel.mat[0, i] = '#'; //Primera fila de borde
+            for (int fila = 1; fila < nivel.mat.GetLength(0) - 1; fila++)
             {
-                nivel.mat[i, 0] = '#';
-                for (int k = 1; k < nivel.mat.GetLength(1) - 1; k++)
+                nivel.mat[fila, 0] = '#'; //Primera columna de borde
+                for (int colu = 1; colu < nivel.mat.GetLength(1) - 1; colu++)
                 {
-                    nivel.mat[i, k] = lineas[i - 1][k - 1];
+                    nivel.mat[fila, colu] = lineas[fila - 1][colu - 1]; //Registra la letra correspondiente aprovechando que un string es un array de chars.
                 }
-                nivel.mat[i, nivel.mat.GetLength(1) - 1] = '#';
+                nivel.mat[fila, nivel.mat.GetLength(1) - 1] = '#'; //Última columna de borde
             }
-            for (int u = 0; u < nivel.mat.GetLength(1); u++) nivel.mat[nivel.mat.GetLength(0) - 1, u] = '#';
+            for (int u = 0; u < nivel.mat.GetLength(1); u++) nivel.mat[nivel.mat.GetLength(0) - 1, u] = '#'; //Última fila de borde
             nivel.act.hor = 1; nivel.act.ver = 1;
             File.Close();
             return nivel;
