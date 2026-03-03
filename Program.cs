@@ -207,6 +207,7 @@
             }
             Console.SetCursorPosition(0, est.mat.GetLength(0) + 3);
             // Escritura objetivo
+            Console.ResetColor();
             Console.Write("Objetivo: ");
             Console.BackgroundColor = colores[BloqueToInt(est.obj)];
             Console.WriteLine("  ");
