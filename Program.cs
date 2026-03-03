@@ -38,8 +38,14 @@ namespace FP2Practica1
             Memoria memoria; memoria.Jugadas = new Jugada[maxMem]; // Inicialización de la memoria de jugadas
             int level;
             Estado est; // Estado de juego
-            bool hayJuego, victoria;
-            while (true)
+            bool hayJuego = true, victoria = false; // Banderas de juego
+            // Sistema de records (si no hay un records.txt lo crea, si existe, lo deja igual)
+            // Esto es una medida para que no de exception si no hay records.txt,
+            // no se si se espera que asumamos que ya exista o no
+            StreamWriter sw = new StreamWriter("record.txt", true);
+            sw.Close();
+            // Bucle de juego
+            while (hayJuego)
             {
                 memoria.ind = 0;
                 // Lectura de nivel
@@ -50,7 +56,6 @@ namespace FP2Practica1
                 est = LeeEst("levels.txt", level);
                 // Se marca la casilla de salida del nivel (condición de victoria)
                 MarcaSalida(ref est);
-                hayJuego = true;
                 victoria = false;
                 // Render inicial
                 Render(est);
@@ -77,7 +82,7 @@ namespace FP2Practica1
                 else
                 {
                     Console.Clear();
-                    Console.WriteLine("Juego Abortado");
+                    Console.WriteLine("Juego Abortado :(");
                 }
             }
         }
