@@ -1,4 +1,6 @@
-﻿using System;
+﻿//Miguel Calderón Barba
+//Pablo Redondo Vaillo
+using System;
 
 namespace FP2Practica1
 {
@@ -149,12 +151,12 @@ namespace FP2Practica1
         // Establece la salida (condición de victoria) del nivel
         static void MarcaSalida(ref Estado est)
         {
-            int fila, colu;
-            int i = 0;
+            int fila, colu; //Aquí estarán las coordenadas de la salida
+            int i = 0; //Contadores
             int j = 0;
-            Coor bloqObj; bloqObj.hor = 0; bloqObj.ver = 0;
+            Coor bloqObj; bloqObj.hor = 0; bloqObj.ver = 0; //Coordenadas del bloque más superior izquierdo del bloque objetivo
             bool encontrado = false;
-            while (i < est.mat.GetLength(1) && !encontrado)
+            while (i < est.mat.GetLength(1) && !encontrado) //Buscamos el bloque objetivo
             {
                 j = 0;
                 while (j < est.mat.GetLength(0) && !encontrado)
@@ -164,10 +166,10 @@ namespace FP2Practica1
                 }
                 i++;
             }
-            if (est.mat[bloqObj.ver + 1, bloqObj.hor] == est.obj) { colu = bloqObj.hor; fila = est.mat.GetLength(0) - 1; }
-            else { colu = est.mat.GetLength(0) - 1; fila = bloqObj.ver; }
-            est.sal.hor = colu; est.sal.ver = fila;
-            est.mat[fila, colu] = '.';
+            if (est.mat[bloqObj.ver + 1, bloqObj.hor] == est.obj) { colu = bloqObj.hor; fila = est.mat.GetLength(0) - 1; } //Si el bloque está en vertical
+            else { colu = est.mat.GetLength(0) - 1; fila = bloqObj.ver; } //Si el bloque está en horizontal
+            est.sal.hor = colu; est.sal.ver = fila; //establecemos las coordenadas en la salida
+            est.mat[fila, colu] = '.'; //Ponemos un hueco en la representación para la salida
         }
         // ---- Render ----
         #region Métodos del render
