@@ -206,6 +206,11 @@
                 Console.Write("  ");
             }
             Console.SetCursorPosition(0, est.mat.GetLength(0) + 3);
+            // Escritura objetivo
+            Console.Write("Objetivo: ");
+            Console.BackgroundColor = colores[BloqueToInt(est.obj)];
+            Console.WriteLine("  ");
+            // Fin Render
             Console.ResetColor();
         }
         // Convierte un char en un int para array de colores
