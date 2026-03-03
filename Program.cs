@@ -1,4 +1,6 @@
-﻿namespace FP2Practica1
+﻿using System;
+
+namespace FP2Practica1
 {
     internal class Program
     {
@@ -56,9 +58,8 @@
                     // Lectura de input
                     char c = LeeInput();
                     // Procesamiento de input
-                    if (c == 'q') hayJuego = false;
-                    else if (c == 'z') Delete(ref memoria, ref est);
-                    else ProcesaInput(ref est, c, ref memoria);
+                    if (c == 'q') { hayJuego = false; } // Input de salida
+                    else { ProcesaInput(ref est, c, ref memoria); }
                     // Render del estado de juego
                     Render(est);
                     // Comprobación de condición de victoria
@@ -68,7 +69,7 @@
                 if (victoria)
                 {
                     Console.WriteLine("GANASTE");
-                    Record(memoria, level); // 
+                    Record(memoria, level); // Registro en records
                 }
                 // Si se ha salido del juego mediante input
                 else
@@ -311,9 +312,9 @@
                     Mueve(1, 0, ref est, ref mem);
                     break;
                 // Deshacer jugada
-                case 'z': break;
-                // Salida
-                case 'q': break;
+                case 'z':
+                    Delete(ref mem, ref est);
+                    break;
                 default: break;
             }
         }
